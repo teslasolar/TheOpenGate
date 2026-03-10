@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE OPEN GATE — Drug-Ring Circuit Analyzer</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#050408;--bg2:#0a0a12;--bg3:#12121e;--bg4:#1a1a2e;
+  --text:#e0dfe6;--text2:#a0a0b0;--text3:#707088;
+  --gold:#d4a843;--gold2:#f0c860;--red:#e04040;--red2:#ff6060;
+  --green:#40c060;--green2:#60e080;--blue:#4080e0;--blue2:#60a0ff;
+  --orange:#e08030;--purple:#a060e0;--cyan:#40c0c0;
+  --critical:#ff2020;--high:#ff6020;--moderate:#e0a020;--low:#60a0ff;
+  --r0:#e04040;--r1:#e08030;--r2:#d4a843;--r3:#40c060;--r4:#4080e0;--r5:#a060e0;--r6:#40c0c0;
+  --font:'Courier New',monospace;
+}
+html{font-size:14px}
+body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.5;min-height:100vh}
+a{color:var(--blue2);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* DISCLAIMER BANNER */
+#disclaimer{background:#1a0000;border-bottom:2px solid var(--red);padding:8px 16px;text-align:center;font-size:.8rem;color:var(--red2);position:sticky;top:0;z-index:1000}
+
+/* HEADER */
+header{text-align:center;padding:24px 16px 16px;border-bottom:1px solid #222}
+header h1{font-size:1.8rem;color:var(--gold);letter-spacing:4px}
+header .subtitle{color:var(--text2);font-size:.85rem;margin-top:4px}
+header .hook{color:var(--text3);font-size:.75rem;margin-top:8px;font-style:italic}
+
+/* LAYOUT */
+.app{display:grid;grid-template-columns:320px 1fr 340px;gap:0;min-height:calc(100vh - 140px)}
+@media(max-width:1100px){.app{grid-template-columns:1fr;}}
+
+/* PANELS */
+.panel{padding:16px;border-right:1px solid #1a1a2e;overflow-y:auto;max-height:calc(100vh - 140px)}
+@media(max-width:1100px){.panel{max-height:none;border-right:none;border-bottom:1px solid #1a1a2e}}
+.panel h2{font-size:1rem;color:var(--gold);margin-bottom:12px;letter-spacing:2px;border-bottom:1px solid #222;padding-bottom:6px}
+.panel h3{font-size:.85rem;color:var(--text2);margin:12px 0 6px;text-transform:uppercase;letter-spacing:1px}
+
+/* INPUTS */
+label{display:block;font-size:.8rem;color:var(--text2);margin-bottom:4px}
+input[type="number"],input[type="text"],select{
+  background:var(--bg3);border:1px solid #333;color:var(--text);padding:6px 8px;
+  border-radius:4px;width:100%;font-family:var(--font);font-size:.85rem;margin-bottom:8px}
+input:focus,select:focus{outline:none;border-color:var(--gold)}
+.radio-group{display:flex;gap:8px;margin-bottom:8px}
+.radio-group label{display:flex;align-items:center;gap:4px;cursor:pointer;font-size:.85rem;color:var(--text)}
+.radio-group input[type="radio"]{accent-color:var(--gold)}
+.checkbox-group{margin-bottom:8px}
+.checkbox-group label{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.8rem;color:var(--text);padding:2px 0}
+.checkbox-group input[type="checkbox"]{accent-color:var(--gold)}
+button{
+  background:var(--bg4);border:1px solid #444;color:var(--text);padding:8px 16px;
+  border-radius:4px;cursor:pointer;font-family:var(--font);font-size:.85rem;transition:.2s}
+button:hover{border-color:var(--gold);color:var(--gold)}
+button.primary{background:var(--gold);color:var(--bg);border-color:var(--gold);font-weight:bold}
+button.primary:hover{background:var(--gold2)}
+
+/* DRUG SEARCH */
+.drug-search{position:relative}
+.drug-search input{margin-bottom:0}
+.drug-results{position:absolute;top:100%;left:0;right:0;background:var(--bg3);border:1px solid #444;
+  border-radius:0 0 4px 4px;max-height:200px;overflow-y:auto;z-index:100;display:none}
+.drug-results.show{display:block}
+.drug-result{padding:6px 10px;cursor:pointer;font-size:.8rem;border-bottom:1px solid #222}
+.drug-result:hover{background:var(--bg4);color:var(--gold)}
+.drug-result .brand{color:var(--text3);font-size:.7rem}
+.drug-result .class{color:var(--text3);font-size:.7rem;float:right}
+.drug-result .bbw{color:var(--red);font-weight:bold;font-size:.65rem}
+
+/* ADDED MEDS LIST */
+.med-list{margin-top:8px}
+.med-item{display:flex;align-items:center;gap:6px;padding:6px 8px;background:var(--bg2);border-radius:4px;margin-bottom:4px;font-size:.8rem}
+.med-item .ring-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.med-item .name{flex:1}
+.med-item .bbw-badge{background:var(--red);color:#fff;font-size:.6rem;padding:1px 4px;border-radius:2px}
+.med-item .remove{cursor:pointer;color:var(--text3);font-size:1rem}
+.med-item .remove:hover{color:var(--red)}
+.med-item input[type="number"]{width:60px;margin:0;padding:3px 6px;font-size:.75rem}
+
+/* SUBSTANCE TOGGLES */
+.substance-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:.8rem}
+.substance-row select,.substance-row input{width:auto;flex-shrink:0;margin:0}
+
+/* VISUALIZATION */
+.viz-panel{background:var(--bg2);display:flex;flex-direction:column;align-items:center;gap:16px;padding:16px}
+#ringCanvas{width:100%;max-width:500px;aspect-ratio:1}
+svg text{font-family:var(--font)}
+
+/* K+ METER */
+.k-meter{width:100%;max-width:400px}
+.k-meter-bar{height:24px;background:var(--bg3);border-radius:4px;overflow:hidden;position:relative;border:1px solid #333}
+.k-meter-fill{height:100%;transition:width .5s;border-radius:4px}
+.k-meter-shield{position:absolute;top:0;right:0;height:100%;background:rgba(64,128,224,.25);border-left:2px dashed var(--blue)}
+.k-meter-label{display:flex;justify-content:space-between;font-size:.7rem;color:var(--text3);margin-top:2px}
+.k-meter-segments{display:flex;gap:2px;margin-top:4px}
+.k-seg{height:12px;border-radius:2px;font-size:.55rem;display:flex;align-items:center;justify-content:center;color:rgba(0,0,0,.7);overflow:hidden;white-space:nowrap}
+
+/* NT BARS */
+.nt-bars{width:100%;max-width:400px}
+.nt-row{display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:.75rem}
+.nt-label{width:50px;text-align:right;color:var(--text2)}
+.nt-bar-container{flex:1;height:16px;background:var(--bg3);border-radius:2px;position:relative;overflow:hidden}
+.nt-bar{height:100%;border-radius:2px;transition:width .5s}
+.nt-normal-zone{position:absolute;left:35%;width:30%;height:100%;border-left:1px solid var(--green);border-right:1px solid var(--green);opacity:.3}
+.nt-value{width:40px;font-size:.7rem;color:var(--text3)}
+
+/* GATE STATUS */
+.gate-status{text-align:center;padding:12px;border-radius:8px;border:2px solid #333}
+.gate-status.stable{border-color:var(--green);background:rgba(64,192,96,.05)}
+.gate-status.oscillating{border-color:var(--gold);background:rgba(212,168,67,.05)}
+.gate-status.forced-open{border-color:var(--red);background:rgba(224,64,64,.05)}
+.gate-status.forced-closed{border-color:var(--blue);background:rgba(64,128,224,.05)}
+.gate-label{font-size:1.2rem;font-weight:bold;letter-spacing:2px}
+.gate-forces{font-size:.7rem;color:var(--text3);margin-top:6px}
+
+/* OUTPUT PANEL */
+.output-panel{background:var(--bg)}
+
+/* ALERTS */
+.alert{padding:8px 10px;border-radius:4px;margin-bottom:6px;font-size:.78rem;border-left:3px solid}
+.alert.critical{border-color:var(--critical);background:rgba(255,32,32,.08)}
+.alert.high{border-color:var(--high);background:rgba(255,96,32,.06)}
+.alert.moderate{border-color:var(--moderate);background:rgba(224,160,32,.05)}
+.alert.low{border-color:var(--low);background:rgba(96,160,255,.05)}
+.alert .severity{font-weight:bold;text-transform:uppercase;font-size:.7rem}
+.alert .severity.critical{color:var(--critical)}
+.alert .severity.high{color:var(--high)}
+.alert .severity.moderate{color:var(--moderate)}
+.alert .severity.low{color:var(--low)}
+.alert .mechanism{color:var(--text3);font-size:.72rem;margin-top:2px}
+.alert .source{color:var(--blue);font-size:.68rem}
+
+/* CORRECTIONS */
+.correction{padding:6px 10px;font-size:.8rem;border-left:2px solid var(--gold);margin-bottom:4px;background:rgba(212,168,67,.03)}
+.correction .step-num{color:var(--gold);font-weight:bold}
+
+/* EXPORT */
+.export-section{margin-top:16px;text-align:center;padding-top:12px;border-top:1px solid #222}
+
+/* PRINT */
+@media print{
+  #disclaimer{position:static}
+  .app{display:block}
+  .panel{max-height:none;border:none}
+  button,.drug-search,.substance-row select{display:none}
+  body{background:#fff;color:#000}
+  .alert{border:1px solid #999;background:#f8f8f8}
+  header{border-bottom:2px solid #000}
+  header h1{color:#333}
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
+
+/* EMPTY STATE */
+.empty-state{color:var(--text3);font-size:.8rem;text-align:center;padding:20px;font-style:italic}
+
+/* ESTROGEN SHIELD */
+.shield-indicator{display:flex;align-items:center;gap:6px;padding:6px 10px;background:rgba(64,128,224,.08);
+  border:1px solid rgba(64,128,224,.2);border-radius:4px;font-size:.78rem;margin-bottom:12px}
+.shield-bar{width:60px;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden}
+.shield-fill{height:100%;background:var(--blue);border-radius:4px;transition:width .3s}
+</style>
+</head>
+<body>
+
+<div id="disclaimer">
+  This is an educational visualization tool, not medical advice. All medication decisions require a qualified healthcare provider.
+  This tool helps you understand interactions so you can have informed conversations with your doctor.
+</div>
+
+<header>
+  <h1>THE OPEN GATE</h1>
+  <div class="subtitle">Drug-Ring Circuit Analyzer &middot; Educational Tool</div>
+  <div class="hook">Your doctor has 15 minutes and 47 drugs to review. This tool shows the circuit in 30 seconds. It's not medical advice. It's a map.</div>
+</header>
+
+<div class="app">
+  <!-- INPUT PANEL -->
+  <div class="panel input-panel">
+    <h2>INPUTS</h2>
+
+    <h3>Demographics</h3>
+    <label>Age</label>
+    <input type="number" id="age" min="13" max="100" value="35" placeholder="Age">
+
+    <label>Sex</label>
+    <div class="radio-group">
+      <label><input type="radio" name="sex" value="M"> M</label>
+      <label><input type="radio" name="sex" value="F"> F</label>
+      <label><input type="radio" name="sex" value="X" checked> X</label>
+    </div>
+
+    <div id="menoSection" style="display:none">
+      <label>Menopausal Status</label>
+      <div class="radio-group">
+        <label><input type="radio" name="meno" value="pre" checked> Pre</label>
+        <label><input type="radio" name="meno" value="peri"> Peri</label>
+        <label><input type="radio" name="meno" value="post"> Post</label>
+        <label><input type="radio" name="meno" value="hrt"> HRT</label>
+      </div>
+    </div>
+
+    <h3>Medications</h3>
+    <div class="drug-search">
+      <input type="text" id="drugSearch" placeholder="Search medications..." autocomplete="off">
+      <div class="drug-results" id="drugResults"></div>
+    </div>
+    <div class="med-list" id="medList"></div>
+
+    <h3>Substances</h3>
+    <div class="substance-row">
+      <label style="margin:0;width:60px">Alcohol</label>
+      <select id="alcFreq">
+        <option value="never">Never</option>
+        <option value="monthly">Monthly</option>
+        <option value="weekly">Weekly</option>
+        <option value="daily">Daily</option>
+      </select>
+      <input type="number" id="alcQty" min="0" max="30" value="0" style="width:50px" placeholder="#">
+      <span style="font-size:.7rem;color:var(--text3)">drinks/occasion</span>
+    </div>
+    <div class="checkbox-group">
+      <label><input type="checkbox" id="subCannabis"> Cannabis</label>
+      <label><input type="checkbox" id="subNicotine"> Nicotine</label>
+      <label><input type="checkbox" id="subCaffeine"> Caffeine</label>
+    </div>
+
+    <h3>History</h3>
+    <div class="checkbox-group">
+      <label><input type="checkbox" id="hxLyme"> Lyme disease</label>
+      <label><input type="checkbox" id="hxTBI"> Head trauma / TBI</label>
+      <label><input type="checkbox" id="hxPsychosis"> Family hx psychosis</label>
+      <label><input type="checkbox" id="hxACEs"> Childhood ACEs 4+</label>
+    </div>
+
+    <h3>Symptoms</h3>
+    <div class="checkbox-group">
+      <label style="color:var(--r0)"><input type="checkbox" data-ring="R0" class="symptom"> GI issues / appetite changes</label>
+      <label style="color:var(--r0)"><input type="checkbox" data-ring="R0" class="symptom"> Sleep disruption</label>
+      <label style="color:var(--r2)"><input type="checkbox" data-ring="R2" class="symptom"> Sensory overload / can't filter noise</label>
+      <label style="color:var(--r2)"><input type="checkbox" data-ring="R2" class="symptom"> Exaggerated startle response</label>
+      <label style="color:var(--r3)"><input type="checkbox" data-ring="R3" class="symptom"> Mood cycling / anxiety</label>
+      <label style="color:var(--r3)"><input type="checkbox" data-ring="R3" class="symptom"> Paranoia / anger outbursts</label>
+      <label style="color:var(--r4)"><input type="checkbox" data-ring="R4" class="symptom"> Racing thoughts / confused thinking</label>
+      <label style="color:var(--r5)"><input type="checkbox" data-ring="R5" class="symptom"> Depersonalization / identity confusion</label>
+      <label style="color:var(--r6)"><input type="checkbox" data-ring="R6" class="symptom"> Dissociation / losing track of time</label>
+    </div>
+
+    <div style="margin-top:16px">
+      <button class="primary" onclick="computeAndRender()" style="width:100%">ANALYZE CIRCUIT</button>
+    </div>
+  </div>
+
+  <!-- VISUALIZATION PANEL -->
+  <div class="panel viz-panel">
+    <h2>CIRCUIT VISUALIZATION</h2>
+
+    <svg id="ringCanvas" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+    </svg>
+
+    <div class="gate-status" id="gateStatus">
+      <div class="gate-label" id="gateLabel">AWAITING INPUT</div>
+      <div class="gate-forces" id="gateForces">Add medications to analyze gate status</div>
+    </div>
+
+    <div id="shieldIndicator" class="shield-indicator" style="display:none">
+      <span style="color:var(--blue)">ESTROGEN SHIELD:</span>
+      <div class="shield-bar"><div class="shield-fill" id="shieldFill" style="width:0%"></div></div>
+      <span id="shieldLabel" style="color:var(--text3)">N/A</span>
+    </div>
+
+    <h3 style="width:100%;color:var(--gold);text-align:center">K+ CHANNEL LOAD</h3>
+    <div class="k-meter">
+      <div class="k-meter-bar">
+        <div class="k-meter-fill" id="kFill" style="width:0%;background:var(--green)"></div>
+        <div class="k-meter-shield" id="kShield" style="display:none;width:0%"></div>
+      </div>
+      <div class="k-meter-label"><span>0 healthy</span><span>0.3</span><span>0.6</span><span>0.8</span><span>1.0 critical</span></div>
+      <div class="k-meter-segments" id="kSegments"></div>
+    </div>
+
+    <h3 style="width:100%;color:var(--gold);text-align:center">NEUROTRANSMITTERS</h3>
+    <div class="nt-bars" id="ntBars"></div>
+  </div>
+
+  <!-- OUTPUT PANEL -->
+  <div class="panel output-panel">
+    <h2>ANALYSIS</h2>
+
+    <h3>Conflict Alerts</h3>
+    <div id="alertsContainer"><div class="empty-state">No medications added yet</div></div>
+
+    <h3>Correction Sequence</h3>
+    <div id="correctionsContainer"><div class="empty-state">Add medications to generate correction sequence</div></div>
+
+    <div class="export-section">
+      <button onclick="exportReport()">EXPORT DISCUSSION GUIDE</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// DRUG DATABASE
+// ═══════════════════════════════════════════
+const DRUG_DB = {
+  dextroamphetamine: {
+    class:"stimulant",schedule:"II",brand:["Dexedrine","Zenzedi","ProCentra"],
+    ring_targets:{R2:{direction:"OPEN",mechanism:"DA flood at mesolimbic pathway",strength:.8},R3:{direction:"AMPLIFY",mechanism:"NE + DA heighten arousal/affect",strength:.5}},
+    neurotransmitters:{DA:.8,NE:.6,"5HT":.3},
+    k_channel_impact:{direction:"modulate",mechanism:"D1/D2 regulate Kv activity",severity:.4},
+    psychosis_risk:{base:2.68,high_dose:5.28,dose_threshold_mg:30,source:"Moran 2024 Am J Psychiatry"},
+    interactions:{ssri:{risk:"serotonin_syndrome",severity:"HIGH",mechanism:"dual 5-HT elevation"},alcohol:{risk:"cardiac + psychosis",severity:"HIGH"},maoi:{risk:"hypertensive_crisis",severity:"CRITICAL"}},
+    fda_warnings:["psychosis at high doses","cardiovascular events","dependence"]
+  },
+  methylphenidate: {
+    class:"stimulant",schedule:"II",brand:["Ritalin","Concerta","Focalin"],
+    ring_targets:{R2:{direction:"OPEN",mechanism:"DA reuptake block (not release)",strength:.5}},
+    neurotransmitters:{DA:.5,NE:.4,"5HT":0},
+    k_channel_impact:{direction:"modulate",severity:.2},
+    psychosis_risk:{base:1.0,note:"No increased psychosis risk found (Moran 2024)"},
+    interactions:{ssri:{risk:"low",severity:"LOW"}}
+  },
+  lisdexamfetamine: {
+    class:"stimulant",schedule:"II",brand:["Vyvanse"],
+    ring_targets:{R2:{direction:"OPEN",strength:.7}},
+    neurotransmitters:{DA:.7,NE:.5,"5HT":.2},
+    k_channel_impact:{severity:.35},
+    psychosis_risk:{base:2.68,high_dose:5.28,dose_threshold_mg:100}
+  },
+  fluoxetine: {
+    class:"SSRI",brand:["Prozac"],
+    ring_targets:{R3:{direction:"MODULATE",mechanism:"5-HT reuptake inhibition",strength:.6}},
+    neurotransmitters:{"5HT":.7,DA:.1,NE:.1},
+    k_channel_impact:{direction:"modulate",mechanism:"5-HT receptor -> K+ channel signaling",severity:.3},
+    aud_warning:{risk:"may_increase_drinking",source:"NCBI NBK615103 2024",evidence:"6 RCTs showed increased alcohol use"},
+    interactions:{alcohol:{risk:"pathological_intoxication",severity:"HIGH",source:"PubMed 25214162"},amphetamine:{risk:"serotonin_syndrome",severity:"HIGH"},tramadol:{risk:"serotonin_syndrome",severity:"HIGH"}}
+  },
+  escitalopram: {
+    class:"SSRI",brand:["Lexapro"],
+    ring_targets:{R3:{direction:"MODULATE",strength:.6}},
+    neurotransmitters:{"5HT":.7},
+    k_channel_impact:{severity:.3},
+    aud_warning:{risk:"may_increase_drinking",source:"NCBI NBK615103 2024"},
+    interactions:{alcohol:{risk:"serotonin_syndrome",severity:"HIGH",source:"PubMed 30844852"},amphetamine:{risk:"serotonin_syndrome",severity:"HIGH"}}
+  },
+  sertraline: {
+    class:"SSRI",brand:["Zoloft"],
+    ring_targets:{R3:{direction:"MODULATE",strength:.6}},
+    neurotransmitters:{"5HT":.7,DA:.15},
+    k_channel_impact:{severity:.3},
+    aud_warning:{risk:"contraindicated_stimulant_dependence",source:"NCBI NBK615103"}
+  },
+  venlafaxine: {
+    class:"SNRI",brand:["Effexor"],
+    ring_targets:{R3:{direction:"MODULATE",strength:.6}},
+    neurotransmitters:{"5HT":.6,NE:.5},
+    k_channel_impact:{severity:.35},
+    aud_warning:{risk:"may_increase_cannabis_use",source:"NCBI NBK615103"}
+  },
+  duloxetine: {
+    class:"SNRI",brand:["Cymbalta"],
+    ring_targets:{R3:{direction:"MODULATE",strength:.5}},
+    neurotransmitters:{"5HT":.5,NE:.5}
+  },
+  quetiapine: {
+    class:"atypical_antipsychotic",brand:["Seroquel"],
+    ring_targets:{R2:{direction:"CLOSE",mechanism:"D2 antagonism at gate",strength:.6}},
+    neurotransmitters:{DA:-.5,"5HT":-.3,H1:-.6},
+    k_channel_impact:{direction:"stabilize",severity:.2,note:"reduces gate oscillation"}
+  },
+  olanzapine: {
+    class:"atypical_antipsychotic",brand:["Zyprexa"],
+    ring_targets:{R2:{direction:"CLOSE",mechanism:"D2/5-HT2A antagonism",strength:.7}},
+    neurotransmitters:{DA:-.6,"5HT":-.4}
+  },
+  naltrexone: {
+    class:"opioid_antagonist",brand:["Vivitrol","ReVia"],
+    ring_targets:{R2:{direction:"STABILIZE",mechanism:"reduces DA reward from alcohol",strength:.5}},
+    neurotransmitters:{DA:-.3},
+    k_channel_impact:{direction:"indirect_stabilize",severity:.1},
+    note:"Evidence-based AUD treatment. Targets the reward pathway that drives the drinking loop."
+  },
+  gabapentin: {
+    class:"anticonvulsant",brand:["Neurontin"],
+    ring_targets:{R2:{direction:"STABILIZE",mechanism:"voltage-gated Ca2+ channel modulation",strength:.5}},
+    neurotransmitters:{GABA:.3,glutamate:-.2},
+    k_channel_impact:{direction:"stabilize",mechanism:"Ca2+ channel modulation stabilizes K+ co-regulation",severity:-.3},
+    note:"Addresses BOTH AUD and K+ channel dysfunction. The gate hardware fix."
+  },
+  topiramate: {
+    class:"anticonvulsant",brand:["Topamax"],
+    ring_targets:{R2:{direction:"STABILIZE",strength:.4}},
+    neurotransmitters:{GABA:.3,glutamate:-.4},
+    k_channel_impact:{direction:"stabilize",severity:-.2}
+  },
+  methocarbamol: {
+    class:"muscle_relaxant",brand:["Robaxin"],
+    ring_targets:{R2:{direction:"CLOSE",mechanism:"general CNS depression",strength:.3}},
+    neurotransmitters:{GABA:.2},
+    interactions:{alcohol:{risk:"CNS_depression_stacking",severity:"MODERATE"}}
+  },
+  cyclobenzaprine: {
+    class:"muscle_relaxant",brand:["Flexeril"],
+    ring_targets:{R2:{direction:"CLOSE",strength:.4}},
+    neurotransmitters:{"5HT":.2,NE:.1},
+    interactions:{ssri:{risk:"serotonin_syndrome",severity:"MODERATE"}}
+  },
+  montelukast: {
+    class:"leukotriene_antagonist",brand:["Singulair"],
+    ring_targets:{R0:{direction:"DISRUPT",mechanism:"bioaccumulates in gut bacteria",strength:.4},R3:{direction:"DESTABILIZE",mechanism:"crosses BBB, direct neuronal effects",strength:.6}},
+    neurotransmitters:{},
+    k_channel_impact:{direction:"unknown",mechanism:"1144 gene interactions identified",severity:.3},
+    fda_warnings:["BLACK BOX (2020): hallucinations, psychosis, depression, suicidality, aggression"],
+    fda_bbw:true,
+    faers:{suicidal_ideation_ror:21.5,depression_ror:8.2,completed_suicides:82}
+  },
+  cetirizine: {
+    class:"H1_antihistamine",brand:["Zyrtec"],
+    ring_targets:{R1:{direction:"DAMPEN",mechanism:"mild CNS sedation",strength:.15}},
+    neurotransmitters:{H1:-.3},
+    k_channel_impact:{severity:.05}
+  },
+  meloxicam: {
+    class:"NSAID",brand:["Mobic"],
+    ring_targets:{R0:{direction:"MASK",mechanism:"suppresses GI inflammation signals",strength:.3}},
+    neurotransmitters:{},
+    k_channel_impact:{severity:.05},
+    note:"Masks gut damage from alcohol. Removes R0 alarm signal."
+  },
+  ibuprofen: {
+    class:"NSAID",brand:["Advil","Motrin"],
+    ring_targets:{R0:{direction:"MASK",strength:.2}},
+    neurotransmitters:{},
+    k_channel_impact:{severity:.05}
+  },
+  alprazolam: {
+    class:"benzodiazepine",schedule:"IV",brand:["Xanax"],
+    ring_targets:{R2:{direction:"CLOSE",mechanism:"GABA-A potentiation",strength:.7}},
+    neurotransmitters:{GABA:.7},
+    k_channel_impact:{direction:"indirect",severity:.2},
+    interactions:{alcohol:{risk:"respiratory_depression",severity:"CRITICAL"}}
+  },
+  clonazepam: {
+    class:"benzodiazepine",schedule:"IV",brand:["Klonopin"],
+    ring_targets:{R2:{direction:"CLOSE",strength:.6}},
+    neurotransmitters:{GABA:.6},
+    interactions:{alcohol:{risk:"respiratory_depression",severity:"CRITICAL"}}
+  },
+  alcohol: {
+    class:"substance",type:"depressant",
+    ring_targets:{R0:{direction:"DAMAGE",mechanism:"gut inflammation, microbiome disruption",strength:.5},R2:{direction:"OSCILLATE",mechanism:"GABA up acute -> GABA down chronic -> glutamate rebound",strength:.8},R3:{direction:"DESTABILIZE",mechanism:"serotonin spike then crash",strength:.5}},
+    neurotransmitters:{GABA:.3,glutamate:.3,"5HT":.1,DA:.4},
+    k_channel_impact:{direction:"degrade",mechanism:"acute KCNQ enhancement -> chronic downregulation -> hardware damage",severity:.7},
+    dose_levels:{light:{drinks_per_week:"1-3",k_severity:.1},moderate:{drinks_per_week:"4-7",k_severity:.3},heavy:{drinks_per_week:"8-14",k_severity:.5},severe:{drinks_per_week:"15+",k_severity:.8}}
+  },
+  cannabis: {
+    class:"substance",
+    ring_targets:{R2:{direction:"MODULATE",mechanism:"CB1 receptor -> K+ channel modulation",strength:.3}},
+    neurotransmitters:{DA:.2,GABA:.1},
+    k_channel_impact:{severity:.2}
+  },
+  caffeine: {
+    class:"substance",
+    ring_targets:{R2:{direction:"OPEN",mechanism:"adenosine antagonism -> increased DA",strength:.2}},
+    neurotransmitters:{DA:.15,NE:.2},
+    k_channel_impact:{severity:.1}
+  },
+  nicotine: {
+    class:"substance",
+    ring_targets:{R2:{direction:"MODULATE",mechanism:"nAChR -> DA release",strength:.3}},
+    neurotransmitters:{DA:.3,NE:.2,"5HT":.1},
+    k_channel_impact:{severity:.15}
+  }
+};
+
+// Demographic modifiers
+const SEX_MODS = {
+  F:{estrogen_shield:{pre:.4,peri:.2,post:0,hrt:.25},psychosis_peaks:[18,25,48]},
+  M:{estrogen_shield:{default:.05},psychosis_peaks:[18,25]},
+  X:{estrogen_shield:{default:.02},psychosis_peaks:[18,25]}
+};
+const AGE_MODS = [
+  {min:13,max:17,gate_maturity:.6,label:"adolescent"},
+  {min:18,max:25,gate_maturity:.8,psychosis_window:true,label:"young_adult"},
+  {min:26,max:38,gate_maturity:1.0,label:"adult"},
+  {min:39,max:55,gate_maturity:1.0,label:"midlife"},
+  {min:56,max:100,gate_maturity:.9,label:"senior"}
+];
+const HISTORY_MODS = {
+  lyme:{k_impact:.5,note:"Anti-neuronal antibodies attack K+ channels via molecular mimicry"},
+  tbi:{k_impact:.3,note:"TBI -> K+ channel disruption at thalamus"},
+  psychosis:{k_impact:.3,note:"Genetic K+ channel variants (KCNQ susceptibility genes)"},
+  aces:{k_impact:.3,r3_impact:.5,note:"Chronic R3 activation -> R2 firmware damage"}
+};
+
+const RING_COLORS = {R0:"#e04040",R1:"#e08030",R2:"#d4a843",R3:"#40c060",R4:"#4080e0",R5:"#a060e0",R6:"#40c0c0"};
+const RING_NAMES = {R0:"Gut/Immune",R1:"Sensory Filter",R2:"The Gate (DA/K+)",R3:"Affect/Mood",R4:"Cognition",R5:"Identity",R6:"Awareness"};
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let selectedMeds = []; // [{name, dose}]
+let lastResult = null;
+
+// ═══════════════════════════════════════════
+// DRUG SEARCH
+// ═══════════════════════════════════════════
+const searchInput = document.getElementById('drugSearch');
+const resultsDiv = document.getElementById('drugResults');
+
+searchInput.addEventListener('input', function() {
+  const q = this.value.toLowerCase().trim();
+  if (q.length < 1) { resultsDiv.classList.remove('show'); return; }
+  const matches = [];
+  for (const [name, drug] of Object.entries(DRUG_DB)) {
+    if (drug.class === 'substance') continue;
+    const brandStr = (drug.brand||[]).join(' ').toLowerCase();
+    if (name.includes(q) || brandStr.includes(q) || (drug.class||'').toLowerCase().includes(q)) {
+      matches.push({name, drug});
+    }
+    if (matches.length >= 10) break;
+  }
+  resultsDiv.innerHTML = matches.map(m => {
+    const bbw = m.drug.fda_bbw ? '<span class="bbw"> [BLACK BOX]</span>' : '';
+    return `<div class="drug-result" data-name="${m.name}">
+      <span>${m.name}</span>${bbw}<span class="class">${m.drug.class}</span>
+      <br><span class="brand">${(m.drug.brand||[]).join(', ')}</span>
+    </div>`;
+  }).join('');
+  resultsDiv.classList.toggle('show', matches.length > 0);
+});
+
+resultsDiv.addEventListener('click', function(e) {
+  const el = e.target.closest('.drug-result');
+  if (!el) return;
+  const name = el.dataset.name;
+  if (selectedMeds.find(m => m.name === name)) return;
+  selectedMeds.push({name, dose: ''});
+  searchInput.value = '';
+  resultsDiv.classList.remove('show');
+  renderMedList();
+  computeAndRender();
+});
+
+searchInput.addEventListener('blur', () => setTimeout(() => resultsDiv.classList.remove('show'), 200));
+
+function renderMedList() {
+  const container = document.getElementById('medList');
+  container.innerHTML = selectedMeds.map((m, i) => {
+    const drug = DRUG_DB[m.name];
+    const mainRing = Object.keys(drug.ring_targets)[0] || 'R2';
+    const color = RING_COLORS[mainRing] || '#666';
+    const bbw = drug.fda_bbw ? '<span class="bbw-badge">BBW</span>' : '';
+    return `<div class="med-item">
+      <span class="ring-dot" style="background:${color}"></span>
+      <span class="name">${m.name} ${bbw}</span>
+      <input type="number" placeholder="mg" value="${m.dose}" onchange="selectedMeds[${i}].dose=this.value;computeAndRender()">
+      <span class="remove" onclick="selectedMeds.splice(${i},1);renderMedList();computeAndRender()">x</span>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════
+// SEX TOGGLE
+// ═══════════════════════════════════════════
+document.querySelectorAll('input[name="sex"]').forEach(r => r.addEventListener('change', function() {
+  document.getElementById('menoSection').style.display = this.value === 'F' ? 'block' : 'none';
+  computeAndRender();
+}));
+
+// Auto-recompute on substance/history changes
+document.querySelectorAll('#alcFreq,#alcQty').forEach(el => el.addEventListener('change', () => computeAndRender()));
+document.querySelectorAll('#subCannabis,#subNicotine,#subCaffeine,#hxLyme,#hxTBI,#hxPsychosis,#hxACEs').forEach(
+  el => el.addEventListener('change', () => computeAndRender())
+);
+
+// ═══════════════════════════════════════════
+// COMPUTATION ENGINE
+// ═══════════════════════════════════════════
+function getInputs() {
+  const age = parseInt(document.getElementById('age').value) || 35;
+  const sex = document.querySelector('input[name="sex"]:checked')?.value || 'X';
+  const meno = sex === 'F' ? (document.querySelector('input[name="meno"]:checked')?.value || 'pre') : null;
+  const alcFreq = document.getElementById('alcFreq').value;
+  const alcQty = parseInt(document.getElementById('alcQty').value) || 0;
+  const substances = [];
+  if (alcFreq !== 'never' && alcQty > 0) substances.push({name:'alcohol',freq:alcFreq,qty:alcQty});
+  if (document.getElementById('subCannabis').checked) substances.push({name:'cannabis'});
+  if (document.getElementById('subNicotine').checked) substances.push({name:'nicotine'});
+  if (document.getElementById('subCaffeine').checked) substances.push({name:'caffeine'});
+  const history = {};
+  if (document.getElementById('hxLyme').checked) history.lyme = true;
+  if (document.getElementById('hxTBI').checked) history.tbi = true;
+  if (document.getElementById('hxPsychosis').checked) history.psychosis = true;
+  if (document.getElementById('hxACEs').checked) history.aces = true;
+  const symptoms = [];
+  document.querySelectorAll('.symptom:checked').forEach(el => symptoms.push(el.dataset.ring));
+  return {age, sex, meno, substances, history, symptoms};
+}
+
+function computeCircuit() {
+  const inputs = getInputs();
+  const rings = {R0:0,R1:0,R2_open:0,R2_close:0,R2_stabilize:0,R3:0,R4:0,R5:0,R6:0};
+  const nt = {DA:0,"5HT":0,GABA:0,glutamate:0,NE:0};
+  let k_load = 0;
+  const k_segments = [];
+  const allConflicts = [];
+  const drugArrows = [];
+
+  // Process medications
+  for (const med of selectedMeds) {
+    const drug = DRUG_DB[med.name];
+    if (!drug) continue;
+    for (const [ring, target] of Object.entries(drug.ring_targets)) {
+      const s = typeof target.strength === 'number' ? target.strength : .5;
+      if (ring === 'R2') {
+        if (target.direction === 'OPEN') rings.R2_open += s;
+        else if (target.direction === 'CLOSE') rings.R2_close += s;
+        else if (target.direction === 'STABILIZE') rings.R2_stabilize += s;
+        else rings.R2_open += s * .3;
+      } else {
+        rings[ring] = (rings[ring]||0) + s;
+      }
+      drugArrows.push({drug:med.name,ring,direction:target.direction,strength:s,mechanism:target.mechanism});
+    }
+    for (const [ntName, effect] of Object.entries(drug.neurotransmitters || {})) {
+      if (typeof effect === 'number') nt[ntName] = (nt[ntName]||0) + effect;
+    }
+    const kSev = drug.k_channel_impact?.severity || 0;
+    if (kSev !== 0) {
+      k_load += kSev;
+      k_segments.push({name:med.name, value:kSev, color: kSev < 0 ? '#40c060' : RING_COLORS[Object.keys(drug.ring_targets)[0]] || '#d4a843'});
+    }
+  }
+
+  // Process substances
+  for (const sub of inputs.substances) {
+    const drug = DRUG_DB[sub.name];
+    if (!drug) continue;
+    let doseMult = 1;
+    if (sub.name === 'alcohol') {
+      const weeklyDrinks = sub.freq === 'daily' ? sub.qty * 7 : sub.freq === 'weekly' ? sub.qty : sub.freq === 'monthly' ? sub.qty / 4 : 0;
+      if (weeklyDrinks <= 3) doseMult = .2;
+      else if (weeklyDrinks <= 7) doseMult = .5;
+      else if (weeklyDrinks <= 14) doseMult = .8;
+      else doseMult = 1.0;
+    }
+    for (const [ring, target] of Object.entries(drug.ring_targets)) {
+      const s = (typeof target.strength === 'number' ? target.strength : .5) * doseMult;
+      if (ring === 'R2') {
+        if (target.direction === 'OPEN') rings.R2_open += s;
+        else if (target.direction === 'CLOSE') rings.R2_close += s;
+        else if (target.direction === 'OSCILLATE') { rings.R2_open += s * .5; rings.R2_close += s * .5; }
+        else if (target.direction === 'MODULATE') rings.R2_open += s * .3;
+        else rings.R2_open += s * .3;
+      } else {
+        rings[ring] = (rings[ring]||0) + s;
+      }
+      drugArrows.push({drug:sub.name,ring,direction:target.direction,strength:s,mechanism:target.mechanism});
+    }
+    for (const [ntName, effect] of Object.entries(drug.neurotransmitters || {})) {
+      if (typeof effect === 'number') nt[ntName] = (nt[ntName]||0) + effect * doseMult;
+    }
+    const kSev = (drug.k_channel_impact?.severity || 0) * doseMult;
+    if (kSev !== 0) {
+      k_load += kSev;
+      k_segments.push({name:sub.name, value:kSev, color:'#e04040'});
+    }
+  }
+
+  // History modifiers
+  for (const [key, active] of Object.entries(inputs.history)) {
+    if (active && HISTORY_MODS[key]) {
+      k_load += HISTORY_MODS[key].k_impact;
+      k_segments.push({name:key, value:HISTORY_MODS[key].k_impact, color:'#a060e0'});
+      if (HISTORY_MODS[key].r3_impact) rings.R3 += HISTORY_MODS[key].r3_impact;
+    }
+  }
+
+  // Estrogen shield
+  let estrogenShield = 0;
+  if (inputs.sex === 'F' && inputs.meno) {
+    estrogenShield = SEX_MODS.F.estrogen_shield[inputs.meno] || 0;
+  } else if (inputs.sex === 'M') {
+    estrogenShield = .05;
+  }
+  const effective_k = Math.max(0, Math.min(1, k_load * (1 - estrogenShield)));
+
+  // Age modifier
+  const ageMod = AGE_MODS.find(a => inputs.age >= a.min && inputs.age <= a.max) || AGE_MODS[2];
+
+  // Gate status
+  const netForce = rings.R2_open - rings.R2_close;
+  const totalForce = rings.R2_open + rings.R2_close;
+  const gateConflict = Math.abs(netForce);
+  let gateStatus;
+  if (totalForce < .1) gateStatus = 'STABLE';
+  else if (rings.R2_open > .5 && rings.R2_close > .5) gateStatus = 'OSCILLATING';
+  else if (netForce > .3) gateStatus = 'FORCED_OPEN';
+  else if (netForce < -.3) gateStatus = 'FORCED_CLOSED';
+  else gateStatus = 'STABLE';
+
+  // Detect conflicts
+  const medNames = selectedMeds.map(m => m.name);
+  const subNames = inputs.substances.map(s => s.name);
+  const allNames = [...medNames, ...subNames];
+
+  for (const medName of allNames) {
+    const drug = DRUG_DB[medName];
+    if (!drug?.interactions) continue;
+    for (const [targetClass, info] of Object.entries(drug.interactions)) {
+      // Check if any other med matches the target class
+      for (const otherName of allNames) {
+        if (otherName === medName) continue;
+        const otherDrug = DRUG_DB[otherName];
+        if (!otherDrug) continue;
+        const matches = otherName === targetClass ||
+          (otherDrug.class||'').toLowerCase().includes(targetClass) ||
+          targetClass === 'ssri' && (otherDrug.class === 'SSRI') ||
+          targetClass === 'amphetamine' && otherDrug.class === 'stimulant' ||
+          targetClass === 'alcohol' && otherName === 'alcohol';
+        if (matches) {
+          const key = [medName,otherName].sort().join('+');
+          if (!allConflicts.find(c => c.key === key && c.risk === info.risk)) {
+            allConflicts.push({
+              key, pair:[medName,otherName], risk:info.risk,
+              severity:info.severity||'MODERATE', mechanism:info.mechanism||'',
+              source:info.source||''
+            });
+          }
+        }
+      }
+    }
+  }
+
+  // FDA BBW alerts
+  for (const medName of medNames) {
+    const drug = DRUG_DB[medName];
+    if (drug?.fda_bbw) {
+      allConflicts.push({
+        key:'bbw_'+medName, pair:[medName,'FDA'], risk:drug.fda_warnings?.join('; '),
+        severity:'CRITICAL', mechanism:'FDA Black Box Warning', source:'FDA'
+      });
+    }
+  }
+
+  // AUD warning
+  for (const medName of medNames) {
+    const drug = DRUG_DB[medName];
+    if (drug?.aud_warning && inputs.substances.find(s => s.name === 'alcohol')) {
+      allConflicts.push({
+        key:'aud_'+medName, pair:[medName,'alcohol_use'],
+        risk: drug.aud_warning.risk === 'may_increase_drinking' ? 'SSRIs may INCREASE alcohol consumption (6 RCTs)' : drug.aud_warning.risk,
+        severity:'HIGH', mechanism:'Evidence suggests this medication may worsen AUD',
+        source:drug.aud_warning.source||''
+      });
+    }
+  }
+
+  // Gate-specific rules
+  if (rings.R2_open > 1.0 && rings.R2_close > .5) {
+    allConflicts.push({key:'gate_conflict',pair:['R2_OPEN','R2_CLOSE'],risk:'GATE CONFLICT: competing forces pushing gate open AND closed simultaneously',severity:'HIGH',mechanism:'Oscillating gate = unpredictable psychotic/dissociative episodes'});
+  }
+  if (effective_k > .7) {
+    allConflicts.push({key:'k_critical',pair:['K+ channels','multiple_drugs'],risk:'K+ CHANNEL CRITICAL: multiple drugs degrading gate hardware',severity:'HIGH',mechanism:'Progressive gate failure independent of software interventions'});
+  }
+  const serotoninSources = [...medNames,...subNames].filter(n => {
+    const d = DRUG_DB[n]; return d?.neurotransmitters?.["5HT"] > .2;
+  });
+  if (serotoninSources.length >= 3) {
+    allConflicts.push({key:'triple_5ht',pair:serotoninSources.slice(0,2),risk:'TRIPLE SEROTONERGIC LOAD',severity:'HIGH',mechanism:'Serotonin syndrome risk elevated with 3+ serotonergic agents'});
+  }
+  if (inputs.sex === 'F' && inputs.meno === 'peri' && effective_k > .4) {
+    allConflicts.push({key:'estrogen_decline',pair:['estrogen','K+ channels'],risk:'ESTROGEN SHIELD DECLINING',severity:'MODERATE',mechanism:'K+ vulnerability increasing with age. Discuss hormone status assessment with provider'});
+  }
+
+  // Serotonin risk
+  const serotonin_risk = serotoninSources.length >= 2 ? 'HIGH' : serotoninSources.length >= 1 && inputs.substances.find(s => s.name === 'alcohol') ? 'MODERATE' : 'LOW';
+
+  // Sort conflicts by severity
+  const sevOrder = {CRITICAL:0,HIGH:1,MODERATE:2,LOW:3};
+  allConflicts.sort((a,b) => (sevOrder[a.severity]||3) - (sevOrder[b.severity]||3));
+
+  // Generate corrections
+  const corrections = generateCorrections(allConflicts, effective_k, gateStatus, inputs, rings);
+
+  return {
+    rings, nt, k_load: effective_k, k_raw: k_load, k_segments,
+    gateStatus, gateConflict, netForce,
+    conflicts: allConflicts, serotonin_risk,
+    corrections, drugArrows, estrogenShield,
+    ageMod, inputs
+  };
+}
+
+function generateCorrections(conflicts, kLoad, gateStatus, inputs, rings) {
+  const steps = [];
+  steps.push({text:"This is not medical advice. The following is an educational analysis to help you have informed conversations with your healthcare provider.",type:"disclaimer"});
+
+  // BBW drugs first
+  const bbw = conflicts.filter(c => c.key.startsWith('bbw_'));
+  for (const c of bbw) {
+    steps.push({text:`Ask your doctor about reviewing ${c.pair[0]} — FDA Black Box Warning: ${c.risk}`,type:"critical"});
+  }
+
+  // Critical interactions
+  const crit = conflicts.filter(c => c.severity === 'CRITICAL' && !c.key.startsWith('bbw_'));
+  for (const c of crit) {
+    steps.push({text:`URGENT: Ask your doctor about the ${c.pair.join(' + ')} combination — ${c.risk}`,type:"critical"});
+  }
+
+  // Dose-dependent risks
+  for (const med of selectedMeds) {
+    const drug = DRUG_DB[med.name];
+    if (drug?.psychosis_risk?.high_dose && med.dose && parseFloat(med.dose) >= drug.psychosis_risk.dose_threshold_mg) {
+      steps.push({text:`Ask your doctor about reviewing ${med.name} dose (${med.dose}mg) — psychosis risk increases at >${drug.psychosis_risk.dose_threshold_mg}mg (OR ${drug.psychosis_risk.high_dose})`,type:"high"});
+    }
+  }
+
+  // High interactions
+  const high = conflicts.filter(c => c.severity === 'HIGH' && !c.key.startsWith('bbw_'));
+  for (const c of high) {
+    if (crit.find(x => x.key === c.key)) continue;
+    steps.push({text:`Ask your doctor about reviewing ${c.pair.join(' + ')} — ${c.risk}`,type:"high"});
+  }
+
+  // AUD assessment
+  if (inputs.substances.find(s => s.name === 'alcohol')) {
+    steps.push({text:"Ask your doctor about an AUD assessment — alcohol impacts K+ channels, neurotransmitter balance, and interacts with multiple medications",type:"moderate"});
+  }
+
+  // K+ channel stabilization
+  if (kLoad > .5) {
+    steps.push({text:"Ask your doctor about K+ channel assessment — aggregate K+ stress is elevated. Gabapentin or similar may address hardware-level gate dysfunction",type:"moderate"});
+  }
+
+  // Gate stabilization
+  if (gateStatus === 'OSCILLATING' || gateStatus === 'FORCED_OPEN') {
+    steps.push({text:`Ask your doctor about R2 gate stabilization — gate is ${gateStatus}. Consider whether competing medications need adjustment`,type:"moderate"});
+  }
+
+  return steps;
+}
+
+// ═══════════════════════════════════════════
+// RENDERING
+// ═══════════════════════════════════════════
+function computeAndRender() {
+  const result = computeCircuit();
+  lastResult = result;
+  renderRingDiagram(result);
+  renderGateStatus(result);
+  renderKMeter(result);
+  renderNTBars(result);
+  renderAlerts(result);
+  renderCorrections(result);
+  renderShield(result);
+}
+
+function renderRingDiagram(result) {
+  const svg = document.getElementById('ringCanvas');
+  const cx = 250, cy = 250;
+  const ringRadii = [210,185,160,135,110,85,60];
+  const ringKeys = ['R0','R1','R2','R3','R4','R5','R6'];
+
+  let html = `<defs><filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`;
+
+  // Draw rings
+  for (let i = 0; i < 7; i++) {
+    const r = ringRadii[i];
+    const key = ringKeys[i];
+    const color = RING_COLORS[key];
+    const load = key === 'R2' ? (result.rings.R2_open + result.rings.R2_close) : (result.rings[key]||0);
+    const opacity = Math.min(.8, .15 + load * .4);
+    const sw = load > .3 ? 2.5 : 1.5;
+    html += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="${sw}" opacity="${opacity}"/>`;
+    // Ring label
+    const labelAngle = -Math.PI/2 + i * .15;
+    const lx = cx + (r + 8) * Math.cos(labelAngle);
+    const ly = cy + (r + 8) * Math.sin(labelAngle);
+    html += `<text x="${lx}" y="${ly}" fill="${color}" font-size="8" opacity=".6" text-anchor="middle">${key}</text>`;
+  }
+
+  // Gate visualization at R2
+  const gateR = ringRadii[2];
+  if (result.gateStatus === 'FORCED_OPEN') {
+    html += `<line x1="${cx-15}" y1="${cy-gateR}" x2="${cx-25}" y2="${cy-gateR-15}" stroke="${RING_COLORS.R2}" stroke-width="3" filter="url(#glow)"/>`;
+    html += `<line x1="${cx+15}" y1="${cy-gateR}" x2="${cx+25}" y2="${cy-gateR-15}" stroke="${RING_COLORS.R2}" stroke-width="3" filter="url(#glow)"/>`;
+    html += `<text x="${cx}" y="${cy-gateR-20}" fill="${RING_COLORS.R2}" font-size="9" text-anchor="middle" font-weight="bold">GATE OPEN</text>`;
+  } else if (result.gateStatus === 'FORCED_CLOSED') {
+    html += `<line x1="${cx-15}" y1="${cy-gateR}" x2="${cx+15}" y2="${cy-gateR}" stroke="${RING_COLORS.R2}" stroke-width="4" filter="url(#glow)"/>`;
+    html += `<text x="${cx}" y="${cy-gateR-12}" fill="#4080e0" font-size="9" text-anchor="middle" font-weight="bold">GATE CLOSED</text>`;
+  } else if (result.gateStatus === 'OSCILLATING') {
+    const t = Date.now() / 500;
+    const osc = Math.sin(t) * 10;
+    html += `<line x1="${cx-15+osc}" y1="${cy-gateR}" x2="${cx+15+osc}" y2="${cy-gateR}" stroke="${RING_COLORS.R2}" stroke-width="3" opacity=".7">
+      <animate attributeName="x1" values="${cx-25};${cx-5};${cx-25}" dur="1s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="${cx+5};${cx+25};${cx+5}" dur="1s" repeatCount="indefinite"/>
+    </line>`;
+    html += `<text x="${cx}" y="${cy-gateR-12}" fill="${RING_COLORS.R2}" font-size="9" text-anchor="middle" font-weight="bold">
+      OSCILLATING<animate attributeName="opacity" values="1;.3;1" dur="1s" repeatCount="indefinite"/></text>`;
+  } else {
+    html += `<circle cx="${cx}" cy="${cy-gateR}" r="4" fill="${RING_COLORS.R2}" opacity=".5"/>`;
+    html += `<text x="${cx}" y="${cy-gateR-10}" fill="${RING_COLORS.R2}" font-size="8" text-anchor="middle" opacity=".5">GATE</text>`;
+  }
+
+  // Drug arrows
+  const arrowsByRing = {};
+  for (const a of result.drugArrows) {
+    if (!arrowsByRing[a.ring]) arrowsByRing[a.ring] = [];
+    arrowsByRing[a.ring].push(a);
+  }
+
+  for (const [ring, arrows] of Object.entries(arrowsByRing)) {
+    const ri = ringKeys.indexOf(ring);
+    if (ri < 0) continue;
+    const r = ringRadii[ri];
+    arrows.forEach((a, idx) => {
+      const angle = Math.PI * 2 * idx / Math.max(arrows.length,1) + Math.PI/4;
+      const ox = cx + (r + 30) * Math.cos(angle);
+      const oy = cy + (r + 30) * Math.sin(angle);
+      const tx = cx + r * Math.cos(angle);
+      const ty = cy + r * Math.sin(angle);
+      const isConflict = a.direction === 'DAMAGE' || a.direction === 'DESTABILIZE' || a.direction === 'DISRUPT';
+      const color = isConflict ? '#ff4040' : RING_COLORS[ring];
+      html += `<line x1="${ox}" y1="${oy}" x2="${tx}" y2="${ty}" stroke="${color}" stroke-width="1.5" opacity=".6" marker-end="url(#arrowhead)"/>`;
+      html += `<text x="${ox}" y="${oy-5}" fill="${color}" font-size="7" text-anchor="middle" opacity=".7">${a.drug.substring(0,8)}</text>`;
+
+      // Animated particle
+      html += `<circle r="2.5" fill="${color}" opacity=".8">
+        <animateMotion dur="${2+idx*.3}s" repeatCount="indefinite" path="M${ox},${oy} L${tx},${ty}"/>
+      </circle>`;
+    });
+  }
+
+  // Arrowhead marker
+  html = `<defs><marker id="arrowhead" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto"><polygon points="0 0, 6 2, 0 4" fill="#888"/></marker>
+  <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>` + html;
+
+  // Center label
+  html += `<text x="${cx}" y="${cy-5}" fill="#fff" font-size="11" text-anchor="middle" font-weight="bold">THE GATE</text>`;
+  html += `<text x="${cx}" y="${cy+10}" fill="#888" font-size="8" text-anchor="middle">K+ = ${(result.k_load*100).toFixed(0)}%</text>`;
+
+  svg.innerHTML = html;
+}
+
+function renderGateStatus(result) {
+  const el = document.getElementById('gateStatus');
+  const label = document.getElementById('gateLabel');
+  const forces = document.getElementById('gateForces');
+  el.className = 'gate-status';
+  const statusMap = {
+    STABLE:{cls:'stable',color:'var(--green)'},
+    OSCILLATING:{cls:'oscillating',color:'var(--gold)'},
+    FORCED_OPEN:{cls:'forced-open',color:'var(--red)'},
+    FORCED_CLOSED:{cls:'forced-closed',color:'var(--blue)'}
+  };
+  const s = statusMap[result.gateStatus] || statusMap.STABLE;
+  el.classList.add(s.cls);
+  label.textContent = result.gateStatus;
+  label.style.color = s.color;
+  forces.innerHTML = `Open force: ${result.rings.R2_open.toFixed(2)} | Close force: ${result.rings.R2_close.toFixed(2)} | Stabilize: ${result.rings.R2_stabilize.toFixed(2)}<br>Net: ${result.netForce.toFixed(2)} | K+ load: ${(result.k_load*100).toFixed(0)}%`;
+}
+
+function renderKMeter(result) {
+  const fill = document.getElementById('kFill');
+  const pct = Math.min(100, result.k_load * 100);
+  fill.style.width = pct + '%';
+  fill.style.background = pct < 30 ? 'var(--green)' : pct < 60 ? 'var(--gold)' : pct < 80 ? 'var(--orange)' : 'var(--red)';
+
+  // Shield overlay
+  const shield = document.getElementById('kShield');
+  if (result.estrogenShield > 0) {
+    shield.style.display = 'block';
+    shield.style.width = (result.estrogenShield * 100) + '%';
+  } else {
+    shield.style.display = 'none';
+  }
+
+  // Segments
+  const segContainer = document.getElementById('kSegments');
+  const totalAbs = result.k_segments.reduce((s,x) => s + Math.abs(x.value), 0) || 1;
+  segContainer.innerHTML = result.k_segments.map(seg => {
+    const w = Math.max(20, (Math.abs(seg.value) / totalAbs) * 100);
+    return `<div class="k-seg" style="width:${w}%;background:${seg.color}" title="${seg.name}: ${seg.value > 0 ? '+' : ''}${seg.value.toFixed(2)}">${seg.name.substring(0,6)}</div>`;
+  }).join('');
+}
+
+function renderNTBars(result) {
+  const container = document.getElementById('ntBars');
+  const nts = ['DA','5HT','GABA','glutamate','NE'];
+  const ntLabels = {DA:'DA','5HT':'5-HT',GABA:'GABA',glutamate:'Glut',NE:'NE'};
+  container.innerHTML = nts.map(nt => {
+    const val = result.nt[nt] || 0;
+    const norm = (val + 1) / 2; // map -1..1 to 0..1
+    const pct = Math.max(2, Math.min(98, norm * 100));
+    const color = val > .5 ? 'var(--red)' : val > .2 ? 'var(--gold)' : val < -.3 ? 'var(--blue)' : 'var(--green)';
+    return `<div class="nt-row">
+      <span class="nt-label">${ntLabels[nt]}</span>
+      <div class="nt-bar-container">
+        <div class="nt-normal-zone"></div>
+        <div class="nt-bar" style="width:${pct}%;background:${color}"></div>
+      </div>
+      <span class="nt-value">${val >= 0 ? '+' : ''}${val.toFixed(2)}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderAlerts(result) {
+  const container = document.getElementById('alertsContainer');
+  if (result.conflicts.length === 0) {
+    container.innerHTML = '<div class="empty-state">No conflicts detected</div>';
+    return;
+  }
+  container.innerHTML = result.conflicts.map(c => {
+    const sevClass = c.severity.toLowerCase();
+    const source = c.source ? `<div class="source">${c.source}</div>` : '';
+    return `<div class="alert ${sevClass}">
+      <span class="severity ${sevClass}">${c.severity}</span> ${c.pair.join(' + ')}<br>
+      <strong>${c.risk}</strong>
+      ${c.mechanism ? `<div class="mechanism">${c.mechanism}</div>` : ''}
+      ${source}
+    </div>`;
+  }).join('');
+}
+
+function renderCorrections(result) {
+  const container = document.getElementById('correctionsContainer');
+  if (result.corrections.length <= 1) {
+    container.innerHTML = '<div class="empty-state">Add medications to generate correction sequence</div>';
+    return;
+  }
+  container.innerHTML = result.corrections.map((c, i) => {
+    return `<div class="correction"><span class="step-num">${i+1}.</span> ${c.text}</div>`;
+  }).join('');
+}
+
+function renderShield(result) {
+  const el = document.getElementById('shieldIndicator');
+  if (result.inputs.sex === 'F') {
+    el.style.display = 'flex';
+    document.getElementById('shieldFill').style.width = (result.estrogenShield * 100) + '%';
+    const labels = {pre:'Active (pre-menopause)',peri:'Declining (peri-menopause)',post:'Removed (post-menopause)',hrt:'Partial (HRT)'};
+    document.getElementById('shieldLabel').textContent = labels[result.inputs.meno] || '';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+// ═══════════════════════════════════════════
+// EXPORT
+// ═══════════════════════════════════════════
+function exportReport() {
+  if (!lastResult) { alert('Run analysis first'); return; }
+  const r = lastResult;
+  const w = window.open('','_blank');
+  const meds = selectedMeds.map(m => `${m.name}${m.dose ? ' '+m.dose+'mg' : ''}`).join(', ');
+  const subs = r.inputs.substances.map(s => s.name + (s.qty ? ` (${s.qty}/occasion, ${s.freq})` : '')).join(', ');
+  const history = Object.keys(r.inputs.history).filter(k => r.inputs.history[k]).join(', ');
+  const alerts = r.conflicts.map(c => `[${c.severity}] ${c.pair.join(' + ')}: ${c.risk}`).join('\n');
+  const corrections = r.corrections.map((c,i) => `${i+1}. ${c.text}`).join('\n');
+
+  w.document.write(`<!DOCTYPE html><html><head><title>Open Gate Report</title>
+<style>body{font-family:'Courier New',monospace;max-width:700px;margin:40px auto;line-height:1.6;color:#222}
+h1{border-bottom:3px solid #333;padding-bottom:8px}h2{color:#555;margin-top:24px;border-bottom:1px solid #ccc;padding-bottom:4px}
+.disclaimer{background:#fff0f0;border:2px solid #cc0000;padding:12px;margin:16px 0;font-size:.85rem;color:#cc0000}
+.alert{margin:4px 0;padding:4px 0;border-bottom:1px solid #eee;font-size:.9rem}
+.critical{color:#cc0000;font-weight:bold}.high{color:#cc6600}.moderate{color:#999900}
+footer{margin-top:40px;padding-top:12px;border-top:2px solid #333;font-size:.75rem;color:#888;text-align:center}
+@media print{body{margin:20px}}</style></head><body>
+<h1>MEDICATION INTERACTION DISCUSSION GUIDE</h1>
+<p><em>Bring to your next appointment</em></p>
+<div class="disclaimer">This is an educational visualization tool, not medical advice. All medication decisions require a qualified healthcare provider. This tool helps you understand interactions so you can have informed conversations with your doctor.</div>
+<h2>Patient Profile</h2>
+<p>Age: ${r.inputs.age} | Sex: ${r.inputs.sex}${r.inputs.meno ? ' ('+r.inputs.meno+')' : ''}</p>
+<h2>Current Medications</h2>
+<p>${meds || 'None entered'}</p>
+<h2>Substances</h2>
+<p>${subs || 'None reported'}</p>
+<h2>Relevant History</h2>
+<p>${history || 'None reported'}</p>
+<h2>Gate Status: ${r.gateStatus}</h2>
+<p>K+ Channel Load: ${(r.k_load*100).toFixed(0)}% | Serotonin Risk: ${r.serotonin_risk}</p>
+<p>R2 Open Force: ${r.rings.R2_open.toFixed(2)} | R2 Close Force: ${r.rings.R2_close.toFixed(2)}</p>
+<h2>Interaction Alerts</h2>
+<pre style="white-space:pre-wrap">${alerts || 'No conflicts detected'}</pre>
+<h2>Suggested Discussion Points</h2>
+<pre style="white-space:pre-wrap">${corrections}</pre>
+<footer>Generated by THE OPEN GATE (teslasolar.github.io/jedi/tools/open-gate/) &mdash; educational tool, not medical advice</footer>
+</body></html>`);
+  w.document.close();
+  w.print();
+}
+
+// ═══════════════════════════════════════════
+// INITIAL RENDER
+// ═══════════════════════════════════════════
+computeAndRender();
+
+// Oscillation animation loop for the ring diagram
+let animFrame;
+function animLoop() {
+  if (lastResult && lastResult.gateStatus === 'OSCILLATING') {
+    renderRingDiagram(lastResult);
+  }
+  animFrame = requestAnimationFrame(animLoop);
+}
+animLoop();
+</script>
+</body>
+</html>
