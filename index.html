@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE OPEN GATE — Navigation</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:#050408;color:#e0dfe6;font-family:'Courier New',monospace;
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 20px;
+}
+.container{max-width:600px;width:100%}
+h1{color:#d4a843;font-size:2rem;letter-spacing:6px;text-align:center;margin-bottom:4px}
+.subtitle{color:#707088;font-size:.8rem;text-align:center;margin-bottom:32px}
+.disclaimer{
+  background:#1a0000;border:1px solid #e04040;border-radius:4px;padding:10px 14px;
+  font-size:.72rem;color:#ff6060;text-align:center;margin-bottom:32px;
+}
+.nav-grid{display:flex;flex-direction:column;gap:12px}
+a.tool-card{
+  display:block;background:#0a0a12;border:1px solid #1a1a2e;border-radius:8px;
+  padding:20px 24px;text-decoration:none;color:#e0dfe6;transition:.2s;
+}
+a.tool-card:hover{border-color:#d4a843;background:#12121e;transform:translateX(4px)}
+.tool-card .name{color:#d4a843;font-size:1.1rem;font-weight:bold;letter-spacing:2px}
+.tool-card .path{color:#707088;font-size:.7rem;margin-top:2px}
+.tool-card .desc{color:#a0a0b0;font-size:.82rem;margin-top:8px;line-height:1.5}
+.tool-card .tags{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
+.tag{
+  font-size:.65rem;padding:2px 8px;border-radius:3px;
+  border:1px solid #333;color:#a0a0b0;
+}
+.tag.ring{border-color:#d4a843;color:#d4a843}
+.tag.edu{border-color:#40c060;color:#40c060}
+.tag.offline{border-color:#4080e0;color:#4080e0}
+.footer{
+  margin-top:40px;text-align:center;color:#707088;font-size:.7rem;line-height:1.8;
+}
+.footer .sig{color:#d4a843;font-size:.75rem;letter-spacing:2px;margin-top:12px}
+.prompt{color:#40c060;margin-bottom:16px;font-size:.85rem}
+.prompt span{color:#707088}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="disclaimer">
+    This is an educational visualization tool, not medical advice.
+    All medication decisions require a qualified healthcare provider.
+  </div>
+
+  <h1>THE OPEN GATE</h1>
+  <div class="subtitle">teslasolar.github.io &middot; /jedi/tools/</div>
+
+  <div class="prompt">$ open-gate <span>--list-tools</span></div>
+
+  <div class="nav-grid">
+
+    <a class="tool-card" href="jedi/tools/open-gate/index.html">
+      <div class="name">DRUG-RING CIRCUIT ANALYZER</div>
+      <div class="path">/jedi/tools/open-gate/</div>
+      <div class="desc">
+        Interactive visualizer for medication interactions through a 7-ring circuit model.
+        Input medications, substances, demographics, and history &mdash; get an animated
+        circuit diagram, K+ channel load analysis, gate status, neurotransmitter map,
+        conflict alerts, and a correction sequence to discuss with your doctor.
+      </div>
+      <div class="tags">
+        <span class="tag ring">R0-R6 rings</span>
+        <span class="tag ring">K+ channel</span>
+        <span class="tag edu">educational</span>
+        <span class="tag offline">works offline</span>
+        <span class="tag">20+ drugs</span>
+        <span class="tag">exportable</span>
+      </div>
+    </a>
+
+  </div>
+
+  <div class="footer">
+    Your doctor has 15 minutes and 47 drugs to review.<br>
+    This tool shows the circuit in 30 seconds.<br>
+    It's not medical advice. It's a map.<br>
+    Bring it to your next appointment.
+    <div class="sig">THE GATE IS THE KEY &middot; THE K+ CHANNEL IS THE GATE</div>
+  </div>
+
+</div>
+</body>
+</html>
