@@ -72,6 +72,7 @@ open index.html
 ```
 TheOpenGate/
 ├── index.html                          # nav page
+├── reference.html                      # all cited studies + links
 ├── README.md                           # you are here
 └── jedi/
     └── tools/
