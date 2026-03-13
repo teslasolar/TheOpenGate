@@ -420,10 +420,10 @@ const DRUG_DB = {
     class:"leukotriene_antagonist",brand:["Singulair"],
     ring_targets:{R0:{direction:"DISRUPT",mechanism:"bioaccumulates in gut bacteria (Nature 2021, Cambridge/EMBL — confirmed in vitro)",strength:.4},R3:{direction:"DESTABILIZE",mechanism:"leukotriene receptors (CysLT1/CysLT2/GPR17) expressed in brain neurons",strength:.6}},
     neurotransmitters:{},
-    k_channel_impact:{direction:"unknown",mechanism:"1144 gene interactions identified",severity:.3},
+    k_channel_impact:{direction:"indirect_gi_only",mechanism:"KATP channel pathway in GI inflammation (not neuropsychiatric). 1144 gene network interactions (computational, Frontiers Pharmacol 2021).",severity:.15},
     fda_warnings:["BLACK BOX (2020): hallucinations, psychosis, depression, suicidality, aggression"],
     fda_bbw:true,
-    faers:{suicidal_ideation_ror:21.5,depression_ror:8.2,completed_suicides:82}
+    faers:{suicidal_ideation_ror:21.5,depression_ror:8.2,completed_suicide_cases:82,source:"Frontiers Pharmacol 2021, FAERS 2004-2018/1998-2019",note:"82 is raw case count NOT an ROR"}
   },
   cetirizine: {
     class:"H1_antihistamine",brand:["Zyrtec"],
