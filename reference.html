@@ -37,6 +37,14 @@ h2{color:#d4a843;font-size:1rem;letter-spacing:2px;margin:32px 0 16px;padding-bo
 .tag.kch{border-color:#40c0c0;color:#40c0c0}
 .tag.fda{border-color:#ff6060;color:#ff6060}
 .ref .used{color:#707088;font-size:.68rem;margin-top:6px}
+.confidence{display:inline-block;font-size:.6rem;padding:2px 8px;border-radius:3px;margin-top:6px;font-weight:bold;letter-spacing:1px}
+.confidence.established{background:rgba(64,192,96,.15);border:1px solid #40c060;color:#40c060}
+.confidence.confirmed{background:rgba(64,128,224,.15);border:1px solid #4080e0;color:#4080e0}
+.confidence.novel-bridge{background:rgba(212,168,67,.15);border:1px solid #d4a843;color:#d4a843}
+.confidence.speculative{background:rgba(160,96,224,.15);border:1px solid #a060e0;color:#a060e0}
+.confidence.unverified{background:rgba(224,64,64,.1);border:1px solid #e04040;color:#e04040}
+.legend{background:#0a0a12;border:1px solid #1a1a2e;border-radius:6px;padding:14px 18px;margin-bottom:24px;font-size:.75rem}
+.legend .row{display:flex;align-items:center;gap:8px;margin-bottom:4px}
 footer{margin-top:48px;padding-top:16px;border-top:1px solid #1a1a2e;text-align:center;color:#707088;font-size:.7rem;line-height:1.8}
 </style>
 </head>
@@ -55,6 +63,15 @@ footer{margin-top:48px;padding-top:16px;border-top:1px solid #1a1a2e;text-align:
 
 <a class="back" href="index.html">&larr; back to nav</a>
 
+<div class="legend">
+  <strong style="color:#d4a843">EVIDENCE CONFIDENCE LABELS</strong>
+  <div class="row"><span class="confidence established">ESTABLISHED</span> Replicated findings, peer-reviewed, clinical consensus</div>
+  <div class="row"><span class="confidence confirmed">CONFIRMED</span> Verified by specific study/source, not yet replicated broadly</div>
+  <div class="row"><span class="confidence novel-bridge">NOVEL BRIDGE</span> This model's synthesis connecting two established findings</div>
+  <div class="row"><span class="confidence speculative">SPECULATIVE</span> Plausible extrapolation from related evidence, not directly tested</div>
+  <div class="row"><span class="confidence unverified">UNVERIFIED</span> Claim needs sourcing or specific numbers need cross-checking</div>
+</div>
+
 <!-- ═══════════════════════════════════════ -->
 <h2>STIMULANT PSYCHOSIS RISK</h2>
 <!-- ═══════════════════════════════════════ -->
@@ -70,6 +87,7 @@ footer{margin-top:48px;padding-top:16px;border-top:1px solid #1a1a2e;text-align:
     <span class="tag safety">psychosis risk</span>
   </div>
   <div class="used">Used for: dextroamphetamine psychosis OR 2.68 (base) / 5.28 (high dose); methylphenidate no increased risk finding</div>
+  <span class="confidence established">ESTABLISHED</span>
 </div>
 
 <!-- ═══════════════════════════════════════ -->
@@ -85,7 +103,8 @@ footer{margin-top:48px;padding-top:16px;border-top:1px solid #1a1a2e;text-align:
     <span class="tag aud">alcohol</span>
     <span class="tag safety">pathological intoxication</span>
   </div>
-  <div class="used">Used for: fluoxetine + alcohol interaction — pathological intoxication (100/201 cases, 12 deaths)</div>
+  <div class="used">Used for: fluoxetine + alcohol interaction — pathological intoxication (100/201 cases, 12 deaths). Menkes &amp; Herxheimer 2014, J Risk Safety in Medicine. DOI: 10.3233/JRS-140632</div>
+  <span class="confidence confirmed">CONFIRMED</span>
 </div>
 
 <div class="ref">
@@ -98,19 +117,21 @@ footer{margin-top:48px;padding-top:16px;border-top:1px solid #1a1a2e;text-align:
     <span class="tag safety">serotonin syndrome</span>
   </div>
   <div class="used">Used for: escitalopram + alcohol serotonin syndrome risk</div>
+  <span class="confidence confirmed">CONFIRMED</span>
 </div>
 
 <div class="ref">
-  <div class="title">Pharmacotherapy for Adults With Alcohol Use Disorders in Outpatient Settings</div>
-  <div class="authors">NCBI Bookshelf — Comparative Effectiveness Reviews</div>
-  <div class="journal">NCBI NBK615103, 2024</div>
+  <div class="title">Avoid Serotonergic Antidepressants for People with Alcohol and Other Substance Use Disorders</div>
+  <div class="authors">Therapeutics Letter, University of British Columbia</div>
+  <div class="journal">NCBI NBK615103, 2024. Referenced by 2023 Canadian Medical Association Journal national guideline (Health Canada)</div>
   <a href="https://www.ncbi.nlm.nih.gov/books/NBK615103/" target="_blank">NCBI NBK615103</a>
   <div class="tags">
     <span class="tag aud">AUD</span>
     <span class="tag safety">SSRIs may increase drinking</span>
     <span class="tag">6 RCTs</span>
   </div>
-  <div class="used">Used for: fluoxetine, escitalopram, sertraline AUD warnings — 6 RCTs showed SSRIs may increase alcohol consumption; sertraline contraindicated in stimulant dependence; venlafaxine may increase cannabis use</div>
+  <div class="used">Used for: fluoxetine, escitalopram, sertraline AUD warnings — systematic reviews + RCTs show worsening substance use outcomes. 2023 Canadian national guideline discourages routine SSRI prescription for AUD patients.</div>
+  <span class="confidence confirmed">CONFIRMED</span>
 </div>
 
 <!-- ═══════════════════════════════════════ -->
@@ -130,6 +151,7 @@ footer{margin-top:48px;padding-top:16px;border-top:1px solid #1a1a2e;text-align:
     <span class="tag safety">suicidality</span>
   </div>
   <div class="used">Used for: montelukast FDA BBW — hallucinations, psychosis, depression, suicidality, aggression</div>
+  <span class="confidence established">ESTABLISHED</span>
 </div>
 
 <div class="ref">
@@ -142,7 +164,22 @@ footer{margin-top:48px;padding-top:16px;border-top:1px solid #1a1a2e;text-align:
     <span class="tag safety">ROR 8.2 depression</span>
     <span class="tag safety">82 completed suicides</span>
   </div>
-  <div class="used">Used for: montelukast FAERS reporting odds ratios and completed suicide count</div>
+  <div class="used">Used for: montelukast FAERS reporting odds ratios and completed suicide count. Specific ROR numbers need cross-checking against published disproportionality analyses.</div>
+  <span class="confidence unverified">UNVERIFIED — exact ROR numbers need cross-check</span>
+</div>
+
+<div class="ref">
+  <div class="title">Bioaccumulation of Therapeutic Drugs by Human Gut Bacteria</div>
+  <div class="authors">Klunemann M, Andrejev S, et al. (MRC Toxicology Unit, Cambridge / EMBL)</div>
+  <div class="journal">Nature, September 2021</div>
+  <a href="https://www.nature.com/articles/s41586-021-03891-8" target="_blank">Nature — Bioaccumulation of Therapeutic Drugs by Human Gut Bacteria</a>
+  <div class="tags">
+    <span class="tag ring">R0 gut</span>
+    <span class="tag">bioaccumulation</span>
+    <span class="tag">microbiome</span>
+  </div>
+  <div class="used">Used for: montelukast R0 gut disruption model. Study confirmed montelukast is bioaccumulated by some gut bacteria and degraded by others (in vitro). 25 bacteria x 15 drugs tested. Bioaccumulation alters bacterial metabolism and secreted metabolites.</div>
+  <span class="confidence confirmed">CONFIRMED</span>
 </div>
 
 <div class="ref">
@@ -153,7 +190,8 @@ footer{margin-top:48px;padding-top:16px;border-top:1px solid #1a1a2e;text-align:
     <span class="tag kch">K+ channels</span>
     <span class="tag">1144 gene interactions</span>
   </div>
-  <div class="used">Used for: montelukast K+ channel impact — 1144 gene interactions identified, mechanism unknown</div>
+  <div class="used">Used for: montelukast K+ channel impact — 1144 gene interactions claimed, specific number not sourced. K+ channel connection is speculative.</div>
+  <span class="confidence unverified">UNVERIFIED — 1144 count needs sourcing; K+ link speculative</span>
 </div>
 
 <!-- ═══════════════════════════════════════ -->
@@ -171,7 +209,35 @@ footer{margin-top:48px;padding-top:16px;border-top:1px solid #1a1a2e;text-align:
     <span class="tag">estrogen shield</span>
     <span class="tag ring">R2 gate</span>
   </div>
-  <div class="used">Used for: estrogen shield model — KCNQ channels protected by estrogen pre-menopause, shield declining peri-menopause, removed post-menopause; female second psychosis peak at menopause as K+ channel unmasking</div>
+  <div class="used">Used for: estrogen shield model — estrogen modulates K+ channels generally. Female second psychosis peak at menopause is established (PMC9743981, PMC9381820). The specific claim that menopausal psychosis = "KCNQ unmasking" is this model's novel synthesis bridging two established findings.</div>
+  <span class="confidence novel-bridge">NOVEL BRIDGE — estrogen-psychosis link established; KCNQ specificity is this model's synthesis</span>
+</div>
+
+<div class="ref">
+  <div class="title">Risk for Midlife Psychosis in Women: Perimenopause and Ovarian Hormones as Mechanisms of Risk</div>
+  <div class="authors">Grigoriadis S, et al.</div>
+  <div class="journal">Psychological Medicine, 2022</div>
+  <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9743981/" target="_blank">PMC9743981</a>
+  <div class="tags">
+    <span class="tag">menopause</span>
+    <span class="tag safety">psychosis</span>
+    <span class="tag">estrogen hypothesis</span>
+  </div>
+  <div class="used">Used for: second psychosis peak in women at menopause (40-50). Hospital admission rates 2x higher for women after 40 (21% vs 10%). Estrogen decline as leading hypothesis. NIMH actively funding research.</div>
+  <span class="confidence established">ESTABLISHED</span>
+</div>
+
+<div class="ref">
+  <div class="title">A Computational Lens on Menopause-Associated Psychosis</div>
+  <div class="journal">PMC, 2022</div>
+  <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9381820/" target="_blank">PMC9381820</a>
+  <div class="tags">
+    <span class="tag">menopause</span>
+    <span class="tag safety">psychosis</span>
+    <span class="tag">computational model</span>
+  </div>
+  <div class="used">Used for: bimodal psychosis onset in females (early adult + midlife). Some controversy: Sommer et al. showed more "plateau" than sharp second peak. Admixture analysis suggests 3 subgroups in women (early/mid/late onset).</div>
+  <span class="confidence established">ESTABLISHED — bimodal pattern accepted, exact shape debated</span>
 </div>
 
 <!-- ═══════════════════════════════════════ -->
@@ -188,7 +254,37 @@ footer{margin-top:48px;padding-top:16px;border-top:1px solid #1a1a2e;text-align:
     <span class="tag ring">R2 gate</span>
     <span class="tag">hardware damage</span>
   </div>
-  <div class="used">Used for: alcohol K+ channel model — acute KCNQ enhancement → chronic downregulation → hardware damage; dose-dependent severity (.1 light to .8 severe)</div>
+  <div class="used">Used for: alcohol K+ channel model — acute KCNQ2/3 attenuation in VTA DA neurons and hippocampus; chronic KCNQ2/3 downregulation in multiple brain regions (MUSC/INIAstress Consortium); low Kcnq expression correlated with high drinking; Kv7 positive modulators reduce heavy drinking; KCNQ3 overexpression in lateral habenula relieved hyperalgesia and decreased relapse drinking.</div>
+  <span class="confidence established">ESTABLISHED</span>
+</div>
+
+<div class="ref">
+  <div class="title">KCNQ Genes in Addiction Brain Circuitry — Altered by Alcohol Dependence</div>
+  <div class="authors">MUSC / NIH INIAstress Consortium</div>
+  <div class="journal">Neuropharmacology / addiction research</div>
+  <a href="https://pubmed.ncbi.nlm.nih.gov/?term=KCNQ+alcohol+dependence+INIAstress+potassium" target="_blank">Search PubMed</a>
+  <div class="tags">
+    <span class="tag kch">KCNQ2/3</span>
+    <span class="tag aud">alcohol</span>
+    <span class="tag ring">R2 gate</span>
+    <span class="tag">Kv7 modulators</span>
+  </div>
+  <div class="used">Used for: low Kcnq gene expression correlates with high drinking levels. Kv7 channel-positive modulators validated as pharmacogenetic target for reducing heavy drinking. Chronic ethanol reduces KCNQ2/3 expression in brain.</div>
+  <span class="confidence established">ESTABLISHED</span>
+</div>
+
+<div class="ref">
+  <div class="title">M-Channel Downregulation in Lateral Habenula During Alcohol Withdrawal</div>
+  <div class="journal">Neuroscience / alcohol withdrawal research</div>
+  <a href="https://pubmed.ncbi.nlm.nih.gov/?term=KCNQ+lateral+habenula+alcohol+withdrawal+M-channel" target="_blank">Search PubMed</a>
+  <div class="tags">
+    <span class="tag kch">M-channels</span>
+    <span class="tag aud">alcohol withdrawal</span>
+    <span class="tag">lateral habenula</span>
+    <span class="tag">KCNQ3</span>
+  </div>
+  <div class="used">Used for: chronic alcohol → lower M-channel protein expression in LHb → hyperactivity of LHb neurons. KCNQ3 overexpression relieved hyperalgesia and decreased relapse-like consumption. Direct evidence for K+ channel "hardware damage" framing.</div>
+  <span class="confidence established">ESTABLISHED</span>
 </div>
 
 <!-- ═══════════════════════════════════════ -->
@@ -204,7 +300,47 @@ footer{margin-top:48px;padding-top:16px;border-top:1px solid #1a1a2e;text-align:
     <span class="tag">molecular mimicry</span>
     <span class="tag">anti-neuronal antibodies</span>
   </div>
-  <div class="used">Used for: Lyme disease history modifier — anti-neuronal antibodies attack K+ channels via molecular mimicry; childhood onset = gate malformed during construction</div>
+  <div class="used">Used for: Lyme disease history modifier. Anti-neuronal antibodies ARE established (Neurology 1988: IgM cross-reacts with axons; OspA antibodies react with neurons in brain/spinal cord/DRG). Molecular mimicry IS established (flagellin, OspA). But K+ channel SPECIFICITY is NOT established — cross-reactivity targets axons/myelin, not specifically VGKC/KCNQ. VGKC antibodies appear in differential diagnosis, not as Lyme consequence.</div>
+  <span class="confidence speculative">SPECULATIVE — anti-neuronal Ab + mimicry established; K+ channel specificity extrapolated</span>
+</div>
+
+<div class="ref">
+  <div class="title">Lyme Disease Patients' Serum Contains IgM Antibodies That Cross-React with Neuronal Antigens</div>
+  <div class="journal">Neurology, 1988</div>
+  <a href="https://pubmed.ncbi.nlm.nih.gov/3412593/" target="_blank">PubMed 3412593</a>
+  <div class="tags">
+    <span class="tag">molecular mimicry</span>
+    <span class="tag">anti-neuronal IgM</span>
+    <span class="tag">axons</span>
+  </div>
+  <div class="used">Used for: seminal study establishing IgM cross-reactivity between Borrelia and human axons in patients with neurologic Lyme.</div>
+  <span class="confidence established">ESTABLISHED</span>
+</div>
+
+<div class="ref">
+  <div class="title">Antibodies Against OspA Epitopes of Borrelia Burgdorferi Cross-React with Neural Tissue</div>
+  <div class="journal">Journal of Neuroimmunology, 2004</div>
+  <a href="https://www.jni-journal.com/article/S0165-5728(04)00371-6/abstract" target="_blank">JNI — OspA Neural Cross-Reactivity</a>
+  <div class="tags">
+    <span class="tag">OspA</span>
+    <span class="tag">molecular mimicry</span>
+    <span class="tag">brain/spinal cord</span>
+  </div>
+  <div class="used">Used for: OspA epitopes share amino acid sequences with brain tissue. Antibodies against OspA peptides react with neurons in brain, spinal cord, and dorsal root ganglia.</div>
+  <span class="confidence established">ESTABLISHED</span>
+</div>
+
+<div class="ref">
+  <div class="title">Anti-Lysoganglioside and Other Anti-Neuronal Autoantibodies in Post-Treatment Lyme Disease</div>
+  <div class="journal">Brain, Behavior, and Immunity: Health, 2020</div>
+  <a href="https://www.sciencedirect.com/science/article/pii/S2666354619300158" target="_blank">ScienceDirect — Post-Treatment Lyme Autoantibodies</a>
+  <div class="tags">
+    <span class="tag">PTLS</span>
+    <span class="tag">autoantibodies</span>
+    <span class="tag">CaMKII activation</span>
+  </div>
+  <div class="used">Used for: elevated anti-neuronal autoantibodies persist after treatment. CaMKII activation confirms functional significance. Anti-ganglioside antibodies elevated in post-treatment Lyme syndrome. Supports ongoing autoimmune mechanism even after antibiotic treatment.</div>
+  <span class="confidence confirmed">CONFIRMED</span>
 </div>
 
 <!-- ═══════════════════════════════════════ -->
@@ -221,6 +357,7 @@ footer{margin-top:48px;padding-top:16px;border-top:1px solid #1a1a2e;text-align:
     <span class="tag">thalamus</span>
   </div>
   <div class="used">Used for: TBI history modifier — K+ channel disruption at thalamus, gate hardware impact</div>
+  <span class="confidence confirmed">CONFIRMED</span>
 </div>
 
 <!-- ═══════════════════════════════════════ -->
@@ -238,6 +375,7 @@ footer{margin-top:48px;padding-top:16px;border-top:1px solid #1a1a2e;text-align:
     <span class="tag">SSRI + stimulant</span>
   </div>
   <div class="used">Used for: SSRI + amphetamine serotonin syndrome interaction severity; triple serotonergic load alerts</div>
+  <span class="confidence established">ESTABLISHED</span>
 </div>
 
 <!-- ═══════════════════════════════════════ -->
@@ -255,6 +393,7 @@ footer{margin-top:48px;padding-top:16px;border-top:1px solid #1a1a2e;text-align:
     <span class="tag">GABA-A</span>
   </div>
   <div class="used">Used for: alprazolam + alcohol, clonazepam + alcohol — CRITICAL respiratory depression / death risk</div>
+  <span class="confidence established">ESTABLISHED</span>
 </div>
 
 <!-- ═══════════════════════════════════════ -->
@@ -272,6 +411,7 @@ footer{margin-top:48px;padding-top:16px;border-top:1px solid #1a1a2e;text-align:
     <span class="tag">Ca2+ channels</span>
   </div>
   <div class="used">Used for: gabapentin as dual AUD + K+ channel hardware fix; Ca2+ channel modulation stabilizes K+ co-regulation; negative K+ severity (protective)</div>
+  <span class="confidence confirmed">CONFIRMED</span>
 </div>
 
 <!-- ═══════════════════════════════════════ -->
@@ -288,6 +428,91 @@ footer{margin-top:48px;padding-top:16px;border-top:1px solid #1a1a2e;text-align:
     <span class="tag">firmware damage</span>
   </div>
   <div class="used">Used for: ACEs 4+ history modifier — chronic R3 activation → R2 firmware damage; K+ impact 0.3, R3 impact 0.5</div>
+  <span class="confidence established">ESTABLISHED — ACEs impact on neurodevelopment; "firmware damage" is this model's framing</span>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<h2>BUSPIRONE — 5-HT1A &rarr; GIRK K+ CHANNEL PATHWAY</h2>
+<!-- ═══════════════════════════════════════ -->
+
+<div class="ref">
+  <div class="title">5-HT1A Receptor-Regulated Signal Transduction Pathways in Brain</div>
+  <div class="journal">PMC / Cellular Signalling</div>
+  <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC2903656/" target="_blank">PMC2903656 — 5-HT1A Signal Transduction</a>
+  <div class="tags">
+    <span class="tag kch">GIRK (Kir3)</span>
+    <span class="tag">5-HT1A</span>
+    <span class="tag">Gi/Go</span>
+    <span class="tag ring">R2 gate</span>
+  </div>
+  <div class="used">Used for: canonical 5-HT1A → Gi/Go → Gbeta-gamma → GIRK (Kir3) channel opening pathway. K+ efflux causes neuronal hyperpolarization. Buspirone engages this pathway as a 5-HT1A partial agonist, meaning it is NOT K+ channel neutral — it opens GIRK channels, causing inhibitory hyperpolarization (opposite direction from K+ channel blockade).</div>
+  <span class="confidence established">ESTABLISHED — canonical signaling pathway</span>
+</div>
+
+<div class="ref">
+  <div class="title">Pharmacological Characterization of 5-HT1A Autoreceptor-Coupled GIRK Channels in Dorsal Raphe</div>
+  <div class="journal">PMC / Neuropharmacology</div>
+  <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4603796/" target="_blank">PMC4603796 — 5-HT1A GIRK Coupling</a>
+  <div class="tags">
+    <span class="tag kch">GIRK</span>
+    <span class="tag">autoreceptors</span>
+    <span class="tag">dorsal raphe</span>
+  </div>
+  <div class="used">Used for: regional specificity of 5-HT1A → GIRK coupling. Autoreceptors in dorsal raphe use GIRK independent of adenylyl cyclase. Galpha-o1 (not Galpha-i2) mediates hippocampal coupling.</div>
+  <span class="confidence established">ESTABLISHED</span>
+</div>
+
+<div class="ref">
+  <div class="title">Buspirone Increases Potassium Conductance in Hippocampal CA1 Pyramidal Cells</div>
+  <div class="authors">Bhatt DK, et al.</div>
+  <div class="journal">European Journal of Pharmacology, 1986</div>
+  <a href="https://link.springer.com/article/10.1007/BF00177743" target="_blank">Springer — Buspirone K+ Conductance</a>
+  <div class="tags">
+    <span class="tag kch">K+ conductance</span>
+    <span class="tag">hippocampus</span>
+    <span class="tag">hyperpolarization</span>
+  </div>
+  <div class="used">Used for: direct evidence buspirone increases K+ conductance in neurons. Long-lasting hyperpolarization confirmed. Congeners gepirone/isapirone produce same effect (confirming 5-HT1A mediation, not D2).</div>
+  <span class="confidence established">ESTABLISHED</span>
+</div>
+
+<div class="ref">
+  <div class="title">Buspirone D2/D3/D4 Receptor Binding and Antagonism</div>
+  <div class="authors">Kuroiwa M, et al.</div>
+  <div class="journal">IJNS / DrugBank DB00490, 2024</div>
+  <a href="https://go.drugbank.com/drugs/DB00490" target="_blank">DrugBank — Buspirone</a>
+  <div class="tags">
+    <span class="tag ring">R2 gate</span>
+    <span class="tag">D2 antagonist</span>
+    <span class="tag">D3 high affinity</span>
+  </div>
+  <div class="used">Used for: CORRECTION — buspirone is D2 ANTAGONIST (Ki=484nM, weak), not partial agonist. Higher D3 (98nM) and D4 (29nM) affinity. PET shows >50-76% D3 occupancy at therapeutic doses. Originally developed as antipsychotic but too weak at D2.</div>
+  <span class="confidence established">ESTABLISHED</span>
+</div>
+
+<div class="ref">
+  <div class="title">Therapeutic Doses of Buspirone Block D3 Receptors in the Living Primate Brain</div>
+  <div class="journal">International Journal of Neuropsychopharmacology, 2014</div>
+  <a href="https://academic.oup.com/ijnp/article/17/8/1257/661743" target="_blank">IJNP — Buspirone D3 Occupancy PET</a>
+  <div class="tags">
+    <span class="tag">D3 antagonism</span>
+    <span class="tag">PET imaging</span>
+    <span class="tag">mesolimbic</span>
+  </div>
+  <div class="used">Used for: buspirone's primary dopaminergic mechanism is D3 antagonism in mesolimbic regions (not D2). Anti-reward/anti-stimulant effect via D3, without postsynaptic D2 blockade that causes motor side effects.</div>
+  <span class="confidence established">ESTABLISHED</span>
+</div>
+
+<div class="ref">
+  <div class="title">Demystifying Serotonin Syndrome (Serotonin Toxicity)</div>
+  <div class="journal">PMC / Canadian Family Physician</div>
+  <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6184959/" target="_blank">PMC6184959 — Serotonin Toxicity Review</a>
+  <div class="tags">
+    <span class="tag safety">serotonin syndrome</span>
+    <span class="tag">buspirone + SSRI</span>
+  </div>
+  <div class="used">Used for: buspirone listed among drugs UNLIKELY to cause true serotonin toxicity. Partial agonism creates ceiling effect unlike reuptake inhibitors. Routinely co-prescribed with SSRIs (STAR*D augmentation). Risk is overstated in interaction databases.</div>
+  <span class="confidence confirmed">CONFIRMED</span>
 </div>
 
 <footer>

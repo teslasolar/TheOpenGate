@@ -418,7 +418,7 @@ const DRUG_DB = {
   },
   montelukast: {
     class:"leukotriene_antagonist",brand:["Singulair"],
-    ring_targets:{R0:{direction:"DISRUPT",mechanism:"bioaccumulates in gut bacteria",strength:.4},R3:{direction:"DESTABILIZE",mechanism:"crosses BBB, direct neuronal effects",strength:.6}},
+    ring_targets:{R0:{direction:"DISRUPT",mechanism:"bioaccumulates in gut bacteria (Nature 2021, Cambridge/EMBL — confirmed in vitro)",strength:.4},R3:{direction:"DESTABILIZE",mechanism:"leukotriene receptors (CysLT1/CysLT2/GPR17) expressed in brain neurons",strength:.6}},
     neurotransmitters:{},
     k_channel_impact:{direction:"unknown",mechanism:"1144 gene interactions identified",severity:.3},
     fda_warnings:["BLACK BOX (2020): hallucinations, psychosis, depression, suicidality, aggression"],
@@ -457,11 +457,36 @@ const DRUG_DB = {
     neurotransmitters:{GABA:.6},
     interactions:{alcohol:{risk:"respiratory_depression",severity:"CRITICAL"}}
   },
+
+  // === ANXIOLYTICS (NON-BENZO) ===
+  buspirone: {
+    class:"azapirone_anxiolytic",brand:["BuSpar"],
+    ring_targets:{
+      R3:{direction:"MODULATE",mechanism:"5-HT1A partial agonism -> GIRK K+ channel opening -> neuronal hyperpolarization",strength:.4},
+      R2:{direction:"STABILIZE",mechanism:"weak D2 antagonism (Ki 484nM) + D3 antagonism (Ki 98nM) in mesolimbic regions",strength:.2}
+    },
+    neurotransmitters:{"5HT":.3,DA:.1,NE:0},
+    k_channel_impact:{direction:"open_girk",mechanism:"5-HT1A -> Gi/Go -> Gbeta-gamma -> GIRK (Kir3) channel opening. Increases K+ conductance, causes inhibitory hyperpolarization. Opposite direction from K+ channel blockers.",severity:-.15},
+    evidence:{
+      d2:"D2 ANTAGONIST not partial agonist (Ki=484nM, weak). Higher D3 (98nM) and D4 (29nM) affinity. PET: >50-76% D3 occupancy at therapeutic doses.",
+      girk:"5-HT1A -> GIRK pathway is canonical. Buspirone increases K+ conductance in hippocampal CA1 pyramids (confirmed by gepirone/isapirone congeners).",
+      source_d2:"Kuroiwa 2024, IJNS; DrugBank DB00490",
+      source_girk:"Bhatt 1986 Eur J Pharmacol; Luscher 1997 J Neurosci",
+      source_d3:"Siuciak 2007 Frontiers Pharmacol"
+    },
+    interactions:{
+      ssri:{risk:"serotonin_syndrome_low",severity:"LOW",mechanism:"partial agonism creates ceiling effect. Routinely co-prescribed (STAR*D augmentation). Case reports exist but risk overstated in interaction databases."},
+      maoi:{risk:"serotonin_syndrome",severity:"CRITICAL",mechanism:"14-day washout required"},
+      alcohol:{risk:"CNS_depression",severity:"MODERATE"}
+    },
+    note:"NOT gate-neutral: opens GIRK K+ channels via 5-HT1A, causing inhibitory hyperpolarization. This is protective (opposite of K+ channel blockade). Originally developed as antipsychotic but too weak at D2 for antipsychotic efficacy."
+  },
+
   alcohol: {
     class:"substance",type:"depressant",
     ring_targets:{R0:{direction:"DAMAGE",mechanism:"gut inflammation, microbiome disruption",strength:.5},R2:{direction:"OSCILLATE",mechanism:"GABA up acute -> GABA down chronic -> glutamate rebound",strength:.8},R3:{direction:"DESTABILIZE",mechanism:"serotonin spike then crash",strength:.5}},
     neurotransmitters:{GABA:.3,glutamate:.3,"5HT":.1,DA:.4},
-    k_channel_impact:{direction:"degrade",mechanism:"acute KCNQ enhancement -> chronic downregulation -> hardware damage",severity:.7},
+    k_channel_impact:{direction:"degrade",mechanism:"acute KCNQ attenuation -> chronic KCNQ2/3 downregulation in VTA/LHb/hippocampus -> hardware damage (MUSC/INIAstress Consortium). Kv7 positive modulators reduce relapse drinking.",severity:.7},
     dose_levels:{light:{drinks_per_week:"1-3",k_severity:.1},moderate:{drinks_per_week:"4-7",k_severity:.3},heavy:{drinks_per_week:"8-14",k_severity:.5},severe:{drinks_per_week:"15+",k_severity:.8}}
   },
   cannabis: {
